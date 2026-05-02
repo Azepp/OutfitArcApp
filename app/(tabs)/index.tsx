@@ -1,87 +1,62 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Image } from "expo-image";
+import { Pressable, StyleSheet, View } from "react-native";
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { HelloWave } from "@/components/hello-wave";
+import ParallaxScrollView from "@/components/parallax-scroll-view";
+import { Typography } from "@/components/ui/typography";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function HomeScreen() {
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+      headerImage={require("@/assets/images/hero/bg-image.png")}
+      headerContent={
+        <View style={{ gap: 8 }}>
+          {/* Navbar */}
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <Image source={require("@/assets/images/logo/horizontal/blueWhite.png")} className="w-20 h-4" />
+            <View className="px-3 py-2 bg-secondary/35 rounded-full">
+              <Typography variant="caption" color="#fff" className="flex-row items-center">
+                <Ionicons name="warning" size={18} color="#FEC903" /> Maksimalkan Perlindunganmu
+              </Typography>
+            </View>
+            <Pressable onPress={() => console.log("klik")} className="w-12 h-12 flex-row items-center justify-center bg-secondary border-2 border-[#00263b] rounded-2xl cursor-pointer">
+              <Typography variant="body" color="#fff">?</Typography>
+            </Pressable>{" "}
+          </View>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
+          <Typography variant="h1" color="#fff">
+            Rp 10.500
+          </Typography>
+          <View className="flex-row items-center">
+            <Typography variant="body" color="#fff" weight="semibold">
+              115{" "}
+            </Typography>
+            <Typography variant="body" color="#fff">
+              Coins
+            </Typography>
+          </View>
+        </View>
+      }
+    >
+      {" "}
+      <View className="" style={{ gap: 16 }}>
+        <View style={styles.titleContainer}>
+          <Typography variant="h1">Welcome to the </Typography>
+          <HelloWave />
+        </View>
+        <Typography variant="body" secondary>
+          This is a clone of the React Native website built with Expo and Tailwind CSS. It serves as a playground for experimenting with different design and development techniques.
+        </Typography>
+      </View>
     </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   stepContainer: {
@@ -93,6 +68,12 @@ const styles = StyleSheet.create({
     width: 290,
     bottom: 0,
     left: 0,
-    position: 'absolute',
+    position: "absolute",
+  },
+  logo: {
+    height: 100,
+    width: 356,
+    alignSelf: "center",
+    marginTop: 20,
   },
 });

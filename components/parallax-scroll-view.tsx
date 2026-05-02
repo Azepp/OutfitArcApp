@@ -1,79 +1,73 @@
-import type { PropsWithChildren, ReactElement } from 'react';
-import { StyleSheet } from 'react-native';
-import Animated, {
-  interpolate,
-  useAnimatedRef,
-  useAnimatedStyle,
-  useScrollOffset,
-} from 'react-native-reanimated';
+import { useColors } from "@/hooks/useColors";
+import type { PropsWithChildren } from "react";
+import { ImageBackground, StyleSheet, View } from "react-native";
+import Animated, { interpolate, useAnimatedRef, useAnimatedStyle, useScrollOffset } from "react-native-reanimated";
 
-import { ThemedView } from '@/components/themed-view';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { useThemeColor } from '@/hooks/use-theme-color';
-
-const HEADER_HEIGHT = 250;
+const HEADER_HEIGHT = 300;
 
 type Props = PropsWithChildren<{
-  headerImage: ReactElement;
-  headerBackgroundColor: { dark: string; light: string };
+  headerImage: number | { uri: string };
+  headerContent?: React.ReactNode;
 }>;
 
-export default function ParallaxScrollView({
-  children,
-  headerImage,
-  headerBackgroundColor,
-}: Props) {
-  const backgroundColor = useThemeColor({}, 'background');
-  const colorScheme = useColorScheme() ?? 'light';
+export default function ParallaxScrollView({ children, headerImage, headerContent }: Props) {
+  const c = useColors();
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollOffset(scrollRef);
-  const headerAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateY: interpolate(
-            scrollOffset.value,
-            [-HEADER_HEIGHT, 0, HEADER_HEIGHT],
-            [-HEADER_HEIGHT / 2, 0, HEADER_HEIGHT * 0.75]
-          ),
-        },
-        {
-          scale: interpolate(scrollOffset.value, [-HEADER_HEIGHT, 0, HEADER_HEIGHT], [2, 1, 1]),
-        },
-      ],
-    };
-  });
+
+  const headerAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateY: interpolate(scrollOffset.value, [-HEADER_HEIGHT, 0, HEADER_HEIGHT], [-HEADER_HEIGHT / 2, 0, HEADER_HEIGHT * 0.75]),
+      },
+      {
+        scale: interpolate(scrollOffset.value, [-HEADER_HEIGHT, 0, HEADER_HEIGHT], [2, 1, 1]),
+      },
+    ],
+  }));
 
   return (
-    <Animated.ScrollView
-      ref={scrollRef}
-      style={{ backgroundColor, flex: 1 }}
-      scrollEventThrottle={16}>
-      <Animated.View
-        style={[
-          styles.header,
-          { backgroundColor: headerBackgroundColor[colorScheme] },
-          headerAnimatedStyle,
-        ]}>
-        {headerImage}
+    <Animated.ScrollView ref={scrollRef} style={{ flex: 1, backgroundColor: c.background }} scrollEventThrottle={16}>
+      {/* Hero section dengan background image */}
+      <Animated.View style={[styles.header, headerAnimatedStyle]}>
+        <ImageBackground source={headerImage} style={styles.headerImage} resizeMode="cover">
+          {/* Overlay gelap tipis biar teks keliatan */}
+          <View style={styles.overlay} />
+
+          {/* Konten di atas hero (saldo, tombol, dll) */}
+          {headerContent && <View style={styles.headerContent}>{headerContent}</View>}
+        </ImageBackground>
       </Animated.View>
-      <ThemedView style={styles.content}>{children}</ThemedView>
+
+      {/* Card konten overlap ke atas hero */}
+      <View style={[styles.contentCard, { backgroundColor: c.background }]}>{children}</View>
     </Animated.ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   header: {
     height: HEADER_HEIGHT,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
-  content: {
+  headerImage: {
     flex: 1,
-    padding: 32,
+    justifyContent: "flex-start",
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.15)",
+  },
+  headerContent: {
+    padding: 20,
+    paddingBottom: 40,
+  },
+  contentCard: {
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    marginTop: -24,
+    minHeight: 600,
+    padding: 20,
     gap: 16,
-    overflow: 'hidden',
   },
 });
