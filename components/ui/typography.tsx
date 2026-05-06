@@ -1,4 +1,4 @@
-import { Text, type TextProps } from "react-native";
+import { Text, type TextProps, StyleSheet } from "react-native";
 import { fontFamily } from "@/constants/typography";
 import { useColors } from "@/hooks/useColors";
 
@@ -10,7 +10,6 @@ type TypographyProps = TextProps & {
   weight?: Weight;
   color?: string;
   secondary?: boolean;
-  className?: string;
 };
 
 const variantFont: Record<Variant, string> = {
@@ -23,21 +22,33 @@ const variantFont: Record<Variant, string> = {
   label: fontFamily.medium,
 };
 
-const variantClass: Record<Variant, string> = {
-  h1: "text-3xl",
-  h2: "text-2xl",
-  h3: "text-xl",
-  body: "text-base",
-  bodyMedium: "text-base",
-  caption: "text-sm",
-  label: "text-xs",
+const variantSize: Record<Variant, number> = {
+  h1: 30,
+  h2: 24,
+  h3: 20,
+  body: 16,
+  bodyMedium: 14,
+  caption: 14,
+  label: 12,
 };
 
-export function Typography({ variant = "body", weight, color, secondary, className = "", style, ...rest }: TypographyProps) {
+export function Typography({ variant = "body", weight, color, secondary, style, ...rest }: TypographyProps) {
   const c = useColors();
 
   const textColor = color ?? (secondary ? c.textSecondary : c.textPrimary);
   const resolvedFont = weight ? fontFamily[weight] : variantFont[variant];
 
-  return <Text className={`${variantClass[variant]} ${className}`} style={[{ fontFamily: resolvedFont, color: textColor }, style]} {...rest} />;
+  return (
+    <Text
+      style={[
+        {
+          fontFamily: resolvedFont,
+          fontSize: variantSize[variant],
+          color: textColor,
+        },
+        style,
+      ]}
+      {...rest}
+    />
+  );
 }

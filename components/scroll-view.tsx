@@ -1,28 +1,24 @@
-import { StyleSheet } from "react-native";
+import { useColors } from "@/hooks/useColors";
+import type { PropsWithChildren } from "react";
+import { StyleSheet, View } from "react-native";
 import Animated, { useAnimatedRef } from "react-native-reanimated";
 
-import { ThemedView } from "@/components/themed-view";
-import { useThemeColor } from "@/hooks/use-theme-color";
-
-export default function ScrollView({ children }: { children: React.ReactNode }) {
-  const backgroundColor = useThemeColor({}, "background");
+export default function ScrollView({ children }: PropsWithChildren) {
+  const c = useColors();
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
 
   return (
-    <Animated.ScrollView ref={scrollRef} style={{ backgroundColor, flex: 1 }} scrollEventThrottle={16}>
-      <ThemedView style={styles.content}>{children}</ThemedView>
+    <Animated.ScrollView ref={scrollRef} style={{ flex: 1, backgroundColor: c.background }} scrollEventThrottle={16}>
+      <View style={[styles.content, { backgroundColor: c.background }]}>{children}</View>
     </Animated.ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   content: {
     flex: 1,
-    padding: 32,
+    paddingVertical: 18,
+    paddingHorizontal: 18,
     gap: 16,
-    overflow: "hidden",
   },
 });

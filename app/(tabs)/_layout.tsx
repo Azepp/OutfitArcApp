@@ -2,17 +2,18 @@ import { Tabs } from "expo-router";
 import React from "react";
 
 import { HapticTab } from "@/components/haptic-tab";
-import { useColors } from "@/hooks/useColors";
-import { View } from "react-native";
 import { Typography } from "@/components/ui/typography";
-import Octicons from "@expo/vector-icons/Octicons";
+import { useColors } from "@/hooks/useColors";
+import { MaterialCommunityIcons, SimpleLineIcons } from "@expo/vector-icons";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import Octicons from "@expo/vector-icons/Octicons";
 import { LinearGradient } from "expo-linear-gradient";
+import { View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TabLayout() {
   const c = useColors();
+  const insets = useSafeAreaInsets();
 
   return (
     <Tabs
@@ -21,8 +22,11 @@ export default function TabLayout() {
         tabBarButton: HapticTab,
         tabBarStyle: {
           backgroundColor: c.backgroundSecondary,
-          height: 80,
+          height: 70 + insets.bottom,
           paddingTop: 6,
+          paddingBottom: insets.bottom,
+          borderTopWidth: 1,
+          borderColor: c.textSecondary + "20",
         },
         tabBarActiveTintColor: c.primary,
         tabBarInactiveTintColor: c.textSecondary,
@@ -38,34 +42,34 @@ export default function TabLayout() {
             </Typography>
           ),
           tabBarIcon: ({ color, focused }) => (
-            <View style={{ backgroundColor: focused ? c.primary + "20" : "transparent" }} className="py-1 px-4 rounded-full">
-              {focused ? <Octicons size={24} name="home-fill" color={color} /> : <Octicons size={24} name="home" color={color} />}
+            <View style={{ backgroundColor: focused ? c.primary + "20" : "transparent" }} className="h-10 w-16 items-center flex-row justify-center rounded-full">
+              {focused ? <Octicons size={20} name="home-fill" color={color} /> : <Octicons size={20} name="home" color={color} />}
             </View>
           ),
         }}
       />
 
       <Tabs.Screen
-        name="keuangan"
+        name="outfits"
         options={{
-          title: "Keuangan",
+          title: "Outfits",
           tabBarLabel: ({ focused, children }) => (
             <Typography variant="label" weight={focused ? "semibold" : "regular"} color={c.textSecondary} className="mt-2">
               {children}
             </Typography>
           ),
           tabBarIcon: ({ color, focused }) => (
-            <View style={{ backgroundColor: focused ? c.primary + "20" : "transparent" }} className="py-1 px-4 rounded-full">
-              <Ionicons size={24} name={focused ? "wallet" : "wallet-outline"} color={color} />
+            <View style={{ backgroundColor: focused ? c.primary + "20" : "transparent" }} className="h-10 w-16 items-center flex-row justify-center rounded-full">
+              <Ionicons size={20} name={focused ? "shirt" : "shirt-outline"} color={color} />
             </View>
           ),
         }}
       />
 
       <Tabs.Screen
-        name="qris"
+        name="trending"
         options={{
-          title: "QRIS",
+          title: "Trending",
           tabBarLabel: ({ focused, children }) => (
             <Typography variant="label" weight={focused ? "semibold" : "regular"} color={c.textSecondary} className="mt-2">
               {children}
@@ -73,36 +77,36 @@ export default function TabLayout() {
           ),
           tabBarIcon: () => (
             <LinearGradient
-              colors={["#44A9DD", "#0a7ea4"]}
+              colors={["#ff9a00", "#ff0000", "#ff5a00"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 0, y: 1 }}
               style={{
                 backgroundColor: c.primary,
-                width: 100,
-                height: 75,
+                width: 80,
+                height: 80,
                 borderRadius: 100,
                 justifyContent: "center",
                 alignItems: "center",
-                marginBottom: 50,
+                marginBottom: 40,
                 shadowColor: c.primary,
                 borderWidth: 4,
                 borderColor: c.borderSecondary,
               }}
             >
               <LinearGradient
-                colors={["#0a7ea4", "#44A9DD"]}
+                colors={["#ff9a00", "#ff5a00", "#ff0000"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 0, y: 1 }}
                 style={{
                   backgroundColor: c.primary,
-                  width: 80,
+                  width: 60,
                   height: 60,
                   borderRadius: 100,
                   justifyContent: "center",
                   alignItems: "center",
                 }}
               >
-                <AntDesign size={28} name="scan" color="#fff" />
+                <SimpleLineIcons size={28} name="fire" color="#fff" />
               </LinearGradient>
             </LinearGradient>
           ),
@@ -110,34 +114,34 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="riwayat"
+        name="series"
         options={{
-          title: "Riwayat",
+          title: "Series",
           tabBarLabel: ({ focused, children }) => (
             <Typography variant="label" weight={focused ? "semibold" : "regular"} color={c.textSecondary} className="mt-2">
               {children}
             </Typography>
           ),
           tabBarIcon: ({ color, focused }) => (
-            <View style={{ backgroundColor: focused ? c.primary + "20" : "transparent" }} className="py-1 px-4 rounded-full">
-              <MaterialCommunityIcons size={24} name={focused ? "invoice-list" : "invoice-list-outline"} color={color} />
+            <View style={{ backgroundColor: focused ? c.primary + "20" : "transparent" }} className="h-10 w-16 items-center flex-row justify-center rounded-full">
+              <Ionicons size={20} name={focused ? "layers" : "layers-outline"} color={color} />
             </View>
           ),
         }}
       />
 
       <Tabs.Screen
-        name="profil"
+        name="characters"
         options={{
-          title: "Profil",
+          title: "Characters",
           tabBarLabel: ({ focused, children }) => (
             <Typography variant="label" weight={focused ? "semibold" : "regular"} color={c.textSecondary} className="mt-2">
               {children}
             </Typography>
           ),
           tabBarIcon: ({ color, focused }) => (
-            <View style={{ backgroundColor: focused ? c.primary + "20" : "transparent" }} className="py-1 px-4 rounded-full">
-              <MaterialIcons size={24} name={focused ? "person" : "person-outline"} color={color} />
+            <View style={{ backgroundColor: focused ? c.primary + "20" : "transparent" }} className="h-10 w-16 items-center flex-row justify-center rounded-full">
+              <MaterialCommunityIcons size={20} name={focused ? "invoice-list" : "invoice-list-outline"} color={color} />
             </View>
           ),
         }}

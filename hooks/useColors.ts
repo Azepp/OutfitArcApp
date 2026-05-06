@@ -1,9 +1,9 @@
-import { useColorScheme } from 'react-native';
-import { colors } from '@/constants/colors';
+// hooks/useColors.ts
+import { useTheme } from "@/context/ThemeContext";
+import { colors } from "@/constants/colors";
 
 export function useColors() {
-    const scheme = useColorScheme() ?? 'light';
-    const isDark = scheme === 'dark';
+    const { isDark } = useTheme();
 
     return {
         textPrimary: isDark ? colors.textPrimaryDark : colors.textPrimary,
@@ -11,6 +11,9 @@ export function useColors() {
         textDisabled: colors.textDisabled,
         background: isDark ? colors.backgroundDark : colors.background,
         backgroundSecondary: isDark ? colors.backgroundSecondaryDark : colors.backgroundSecondary,
+        backgroundGradient: isDark
+            ? (["#35383D", "#2A2C2E"] as [string, string])
+            : ([colors.backgroundSecondary, colors.backgroundSecondary] as [string, string]),
         border: isDark ? colors.borderDark : colors.border,
         borderSecondary: isDark ? colors.borderSecondaryDark : colors.borderSecondary,
         primary: colors.brandPrimary,

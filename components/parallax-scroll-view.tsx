@@ -1,9 +1,8 @@
 import { useColors } from "@/hooks/useColors";
 import type { PropsWithChildren } from "react";
-import { ImageBackground, StyleSheet, View } from "react-native";
+import { StyleSheet, useWindowDimensions, View } from "react-native";
 import Animated, { interpolate, useAnimatedRef, useAnimatedStyle, useScrollOffset } from "react-native-reanimated";
-
-const HEADER_HEIGHT = 300;
+import { Image } from "expo-image";
 
 type Props = PropsWithChildren<{
   headerImage: number | { uri: string };
@@ -12,6 +11,9 @@ type Props = PropsWithChildren<{
 
 export default function ParallaxScrollView({ children, headerImage, headerContent }: Props) {
   const c = useColors();
+  const { width } = useWindowDimensions();
+  const HEADER_HEIGHT = width * (9 / 16); // ← 16:9
+
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollOffset(scrollRef);
 
@@ -28,46 +30,43 @@ export default function ParallaxScrollView({ children, headerImage, headerConten
 
   return (
     <Animated.ScrollView ref={scrollRef} style={{ flex: 1, backgroundColor: c.background }} scrollEventThrottle={16}>
-      {/* Hero section dengan background image */}
-      <Animated.View style={[styles.header, headerAnimatedStyle]}>
-        <ImageBackground source={headerImage} style={styles.headerImage} resizeMode="cover">
-          {/* Overlay gelap tipis biar teks keliatan */}
-          <View style={styles.overlay} />
-
-          {/* Konten di atas hero (saldo, tombol, dll) */}
-          {headerContent && <View style={styles.headerContent}>{headerContent}</View>}
-        </ImageBackground>
+      <Animated.View style={[{ height: HEADER_HEIGHT, overflow: "hidden" }, headerAnimatedStyle]}>
+        <Image
+          source={headerImage}
+          style={[StyleSheet.absoluteFill, { width, height: HEADER_HEIGHT }]}
+          contentFit="cover" // ← bukan resizeMode, tapi contentFit
+        />
+        <View style={styles.overlay} />
+        {headerContent && <View style={[styles.headerContent, { height: HEADER_HEIGHT, justifyContent: "center" }]}>{headerContent}</View>}
       </Animated.View>
 
-      {/* Card konten overlap ke atas hero */}
       <View style={[styles.contentCard, { backgroundColor: c.background }]}>{children}</View>
     </Animated.ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  header: {
-    height: HEADER_HEIGHT,
-    overflow: "hidden",
-  },
+  // header dihapus dari sini karena height-nya sudah dynamic
   headerImage: {
     flex: 1,
-    justifyContent: "flex-start",
+    width: "100%", // fallback
+    justifyContent: "center",
+    alignItems: "center",
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.15)",
+    backgroundColor: "rgba(0,0,0,0.50)",
   },
   headerContent: {
-    padding: 20,
-    paddingBottom: 40,
+    paddingHorizontal: 18,
   },
   contentCard: {
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     marginTop: -24,
     minHeight: 600,
-    padding: 20,
+    paddingVertical: 18,
+    paddingHorizontal: 18,
     gap: 16,
   },
 });

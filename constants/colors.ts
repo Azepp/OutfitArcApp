@@ -1,13 +1,14 @@
 export const colors = {
     // brand
-    brandPrimary: '#01AED6',
-    brandSecondary: '#0C679C',
+    brandPrimary: '#ff5a00',
+    brandSecondary: '#ff9a00',
 
     // background
     background: '#EEEFF3',
     backgroundSecondary: '#FEFEFE',
     backgroundDark: '#141517',
     backgroundSecondaryDark: '#2A2C2E',
+    backgroundGradientDark: ['#35383D', '#2A2C2E'] as [string, string],
 
     // text
     textPrimary: '#020305',

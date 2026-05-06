@@ -19,6 +19,7 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.asepexpo.GopayClone"
+      
     },
     "web": {
       "output": "static",
