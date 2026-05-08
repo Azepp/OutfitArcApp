@@ -40,6 +40,7 @@ export interface Outfit {
     status: 'draft' | 'publik'
     created_at: string
     character?: Character
+    slug: string
     outfit_url?: string | null
     products?: Product[]
     _count?: { products: number }

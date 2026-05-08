@@ -1,12 +1,14 @@
+import CharactersContent from "@/components/characters/charactersContent";
+import CharactersHeader from "@/components/characters/charactersHeader";
 import ScrollView from "@/components/scroll-view";
-import { Typography } from "@/components/ui/typography";
+import SearchBar from "@/components/searchBar";
 
 export default function CharacterScreen() {
   return (
     <ScrollView>
-      <Typography variant="h1" className="mb-4">
-        Characters
-      </Typography>
+      <SearchBar />
+      <CharactersHeader />
+      <CharactersContent />
     </ScrollView>
   );
 }

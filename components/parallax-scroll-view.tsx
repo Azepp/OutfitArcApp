@@ -12,7 +12,7 @@ type Props = PropsWithChildren<{
 export default function ParallaxScrollView({ children, headerImage, headerContent }: Props) {
   const c = useColors();
   const { width } = useWindowDimensions();
-  const HEADER_HEIGHT = width * (9 / 16); // ← 16:9
+  const HEADER_HEIGHT = width * (9 / 16);
 
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollOffset(scrollRef);
@@ -34,7 +34,7 @@ export default function ParallaxScrollView({ children, headerImage, headerConten
         <Image
           source={headerImage}
           style={[StyleSheet.absoluteFill, { width, height: HEADER_HEIGHT }]}
-          contentFit="cover" // ← bukan resizeMode, tapi contentFit
+          contentFit="cover"
         />
         <View style={styles.overlay} />
         {headerContent && <View style={[styles.headerContent, { height: HEADER_HEIGHT, justifyContent: "center" }]}>{headerContent}</View>}
@@ -46,10 +46,9 @@ export default function ParallaxScrollView({ children, headerImage, headerConten
 }
 
 const styles = StyleSheet.create({
-  // header dihapus dari sini karena height-nya sudah dynamic
   headerImage: {
     flex: 1,
-    width: "100%", // fallback
+    width: "100%",
     justifyContent: "center",
     alignItems: "center",
   },

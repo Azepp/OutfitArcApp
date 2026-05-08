@@ -19,9 +19,9 @@ export const colors = {
 
     // border
     border: '#ECEDEF',
-    borderSecondary: '#F4F6F5',
+    borderSecondary: '#D1D3D4',
     borderDark: '#1E2327',
-    borderSecondaryDark: '#1D2124',
+    borderSecondaryDark: '#4A4E51',
 
     // status
     success: '#4CAF50',

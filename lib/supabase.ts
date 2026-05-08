@@ -40,10 +40,10 @@ export async function getAllOutfits(
     const { data, error } = await supabase
         .from('outfits')
         .select(`
-            *,
-            character:characters(id, name, slug, series:series(id, name, slug)),
-            outfit_products(product:products(price))
-        `)
+  *, 
+  character:characters(id, name, slug, photo_url, series:series(id, slug, name, type)),
+  outfit_products(product:products(price))
+`)
         .eq('status', 'publik')
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1)  // ← untuk pagination
@@ -62,7 +62,7 @@ export async function getSeriesBySlug(name?: string): Promise<(SeriesType & { ch
 
     const { data, error } = await supabase
         .from('series')
-        .select(`*, characters(id, name, photo_url, description)`)
+        .select(`*, characters(id, name, slug, photo_url, description)`)
         .eq('status', 'publik')
         .eq('slug', name)  // ← fix
         .single()
@@ -89,8 +89,8 @@ export async function getCharacterWithOutfits(
         .from('characters')
         .select(`
       *,
-      series(id, name),
-      outfits(id, name, mood, gender_tag, status, outfit_url, created_at, 
+      series(id, name, slug),
+      outfits(id, name, slug, mood, gender_tag, status, outfit_url, created_at, 
         outfit_products(
           product:products(id, price)
         )
@@ -118,11 +118,15 @@ export async function getOutfitWithProducts(
     characterSlug: string,
     outfitSlug: string
 ): Promise<OutfitType | null> {
+    console.log("looking for:", seriesSlug, characterSlug, outfitSlug); // ← tambah
+
     const { data: series } = await supabase
         .from('series')
         .select('id')
-        .eq('slug', seriesSlug)  // ← fix
+        .eq('slug', seriesSlug)
         .single()
+
+    console.log("series found:", series); // ← tambah
 
     if (!series) return null
 
@@ -130,24 +134,28 @@ export async function getOutfitWithProducts(
         .from('characters')
         .select('id')
         .eq('series_id', series.id)
-        .eq('slug', characterSlug)  // ← fix
+        .eq('slug', characterSlug)
         .single()
+
+    console.log("character found:", character); // ← tambah
 
     if (!character) return null
 
     const { data, error } = await supabase
         .from('outfits')
         .select(`
-      *,
-      character:characters(id, name, series:series(id, name)),
-      outfit_products(
-        product:products(*)
-      )
-    `)
+    *,
+    character:characters(id, name, series:series(id, name, slug)),
+    outfit_products(
+      product:products(*)
+    )
+  `)
         .eq('character_id', character.id)
         .eq('status', 'publik')
-        .eq('slug', outfitSlug)  // ← fix
+        .eq('slug', outfitSlug)
         .single()
+
+    console.log("outfit found:", data, "error:", error); // ← tambah
 
     if (error) return null
 
@@ -165,7 +173,7 @@ export async function getRecentOutfits(limit: number = 10): Promise<(OutfitType 
         .from('outfits')
         .select(`
       *,
-      character:characters(id, name, photo_url, series:series(id, name, type)),
+      character:characters(id, name, slug, photo_url, series:series(id, slug, name, type)),
       outfit_products(product:products(price))
     `)
         .eq('status', 'publik')
@@ -182,7 +190,6 @@ export async function getRecentOutfits(limit: number = 10): Promise<(OutfitType 
     return transformed
 }
 
-// ─── Products with Outfits (for admin) ─────────────────────
 export async function getProductsWithOutfits() {
     const { data, error } = await supabase
         .from('products')
@@ -195,8 +202,6 @@ export async function getProductsWithOutfits() {
         .order('created_at', { ascending: false })
 
     if (error) return []
-
-    // Transform to include outfits array
     const products = (data ?? []).map((product: any) => ({
         ...product,
         outfits: product.outfit_products?.map((op: any) => op.outfit) ?? []
@@ -205,9 +210,7 @@ export async function getProductsWithOutfits() {
     return products
 }
 
-// Link product to multiple outfits
 export async function linkProductToOutfits(productId: string, outfitIds: string[]) {
-    // Get existing links
     const { data: existing } = await supabase
         .from('outfit_products')
         .select('outfit_id')
@@ -215,7 +218,6 @@ export async function linkProductToOutfits(productId: string, outfitIds: string[
 
     const existingIds = existing?.map((e: any) => e.outfit_id) ?? []
 
-    // Remove links that are no longer needed
     const toRemove = existingIds.filter((id: string) => !outfitIds.includes(id))
     if (toRemove.length > 0) {
         await supabase
@@ -225,8 +227,6 @@ export async function linkProductToOutfits(productId: string, outfitIds: string[
             .in('outfit_id', toRemove)
     }
 
-    // Add new links
-    // Add new links
     const toAdd = outfitIds.filter((id: string) => !existingIds.includes(id))
     if (toAdd.length > 0) {
         const newLinks = toAdd.map((outfitId: string) => ({
@@ -239,6 +239,70 @@ export async function linkProductToOutfits(productId: string, outfitIds: string[
 
         if (error) throw error
     }
+}
+
+export async function getTrendingOutfits(limit = 20) {
+    // Ambil top product_id berdasarkan click_logs
+    const { data: clicks } = await supabase
+        .from("click_logs")
+        .select("product_id")
+        .limit(500);
+
+    if (!clicks) return [];
+
+    // Hitung click count per product
+    const countMap: Record<string, number> = {};
+    for (const row of clicks) {
+        if (!row.product_id) continue;
+        countMap[row.product_id] = (countMap[row.product_id] ?? 0) + 1;
+    }
+
+    // Ambil top product ids
+    const topProductIds = Object.entries(countMap)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, limit)
+        .map(([id]) => id);
+
+    if (topProductIds.length === 0) return [];
+
+    // Ambil outfit dari products tersebut
+    const { data } = await supabase
+        .from("outfit_products")
+        .select(`
+      product_id,
+      outfit:outfits(
+        *,
+        character:characters(id, name, slug, series:series(id, name, slug)),
+        outfit_products(product:products(id, price))
+      )
+    `)
+        .in("product_id", topProductIds);
+
+    if (!data) return [];
+
+    const outfitMap = new Map<string, any>();
+    for (const row of data) {
+        const outfit = row.outfit as any;
+        if (!outfit) continue;
+        if (outfitMap.has(outfit.id)) continue;
+
+        const outfitProductIds = outfit.outfit_products
+            ?.map((op: any) => op.product?.id)
+            .filter(Boolean) ?? [];
+
+        const totalClicks = outfitProductIds.reduce(
+            (sum: number, pid: string) => sum + (countMap[pid] ?? 0),
+            0
+        );
+        outfitMap.set(outfit.id, {
+            ...outfit,
+            products: outfit.outfit_products?.map((op: any) => op.product) ?? [],
+            totalClicks,
+        });
+    }
+
+    return Array.from(outfitMap.values())
+        .sort((a, b) => b.totalClicks - a.totalClicks);
 }
 
 // ─── Search ───────────────────────────────────────────────

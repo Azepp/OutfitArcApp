@@ -9,11 +9,12 @@ export const keys = {
             ['characters', seriesSlug, charSlug] as const,
     },
     outfits: {
-        all: ['outfits'] as const,                                          // ← tambah
+        all: ['outfits'] as const,
         paginated: (limit: number, offset: number) =>
-            ['outfits', 'paginated', limit, offset] as const,              // ← tambah
+            ['outfits', 'paginated', limit, offset] as const,
         recent: (limit: number) => ['outfits', 'recent', limit] as const,
         detail: (seriesSlug: string, charSlug: string, outfitSlug: string) =>
             ['outfits', seriesSlug, charSlug, outfitSlug] as const,
+        trending: ["outfits", "trending"] as const,
     },
 }

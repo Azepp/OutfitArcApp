@@ -5,9 +5,10 @@ import { useQuery } from "@tanstack/react-query";
 import type { Href } from "expo-router";
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { OutfitCard } from "../outfitCard";
+import SearchBar from "../searchBar";
+import { SeriesCard } from "../seriesCard";
 import { Typography } from "../ui/typography";
-import { OutfitCard } from "./components/outfitCard";
-import { SeriesCard } from "./components/seriesCard";
 
 const TYPE_LABEL: Record<string, string> = {
   anime: "Anime",
@@ -18,12 +19,28 @@ const TYPE_LABEL: Record<string, string> = {
 };
 
 // ─── Section Types ─────────────────────────────────────────
-type SectionItem = { type: "header"; id: string } | { type: "outfitLabel"; id: string } | { type: "seriesLabel"; id: string; cat: string } | { type: "outfit"; id: string; data: any } | { type: "series"; id: string; data: any };
+type SectionItem =
+  | { type: "header"; id: string }
+  | { type: "outfitLabel"; id: string }
+  | { type: "seriesLabel"; id: string; cat: string }
+  | { type: "outfit"; id: string; data: any }
+  | { type: "series"; id: string; data: any }
+  | { type: "searchBar"; id: string };
 
 // ─── Section Header ────────────────────────────────────────
-function SectionHeader({ label, href, router }: { label: string; href: Href; router: ReturnType<typeof useRouter> }) {
+function SectionHeader({
+  label,
+  href,
+  router,
+  noMarginTop = false,
+}: {
+  label: string;
+  href: Href;
+  router: ReturnType<typeof useRouter>;
+  noMarginTop?: boolean; // ← tambah prop ini
+}) {
   return (
-    <View style={styles.sectionHeader}>
+    <View style={[styles.sectionHeader, noMarginTop && { marginTop: 0 }]}>
       <Typography variant="body" weight="bold">
         {label}
       </Typography>
@@ -60,7 +77,7 @@ export default function HomeContent() {
 
   // Flatten semua section jadi satu array
   const sections: SectionItem[] = [
-    { type: "header", id: "header" },
+    { type: "searchBar", id: "search-bar" }, // ← tambah di paling atas
 
     ...(recentOutfits.length > 0
       ? [
@@ -101,8 +118,15 @@ export default function HomeContent() {
       contentContainerStyle={styles.content}
       renderItem={({ item }) => {
         switch (item.type) {
+          case "searchBar":
+            return (
+              <View style={styles.searchBarWrapper}>
+                <SearchBar />
+              </View>
+            );
+
           case "outfitLabel":
-            return <SectionHeader label="Outfit Terbaru" href={"/(tabs)/outfits" as Href} router={router} />;
+            return <SectionHeader label="Outfit Terbaru" href={"/(tabs)/outfits" as Href} router={router} noMarginTop />;
 
           case "seriesLabel":
             return <SectionHeader label={TYPE_LABEL[item.cat] ?? item.cat} href={"/(tabs)/series" as Href} router={router} />;
@@ -136,36 +160,33 @@ export default function HomeContent() {
 
 // ─── Styles ────────────────────────────────────────────────
 const styles = StyleSheet.create({
+  searchBarWrapper: {
+    paddingTop: 12,
+    paddingBottom: 24,
+    zIndex: 999,
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-  loadingText: {
-    fontSize: 14,
-    color: "#888",
-  },
   content: {
     paddingBottom: 40,
   },
   header: {
-    paddingHorizontal: 8,
     paddingTop: 8,
     marginBottom: 16,
-  },
-  subtitle: {
-    fontSize: 13,
-    color: "#888",
-    lineHeight: 20,
-    marginTop: 4,
   },
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 8,
     marginTop: 20,
     marginBottom: 10,
+  },
+  loadingText: {
+    fontSize: 14,
+    color: "#888",
   },
   lihatSemua: {
     fontSize: 12,
@@ -174,6 +195,6 @@ const styles = StyleSheet.create({
   },
   gridItem: {
     flex: 1,
-    margin: 8,
+    marginVertical: 6,
   },
 });

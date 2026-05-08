@@ -1,12 +1,14 @@
 import ScrollView from "@/components/scroll-view";
-import { Typography } from "@/components/ui/typography";
+import SearchBar from "@/components/searchBar";
+import SeriesContent from "@/components/series/seriesContent";
+import SeriesHeader from "@/components/series/seriesHeader";
 
 export default function SeriesScreen() {
   return (
     <ScrollView>
-      <Typography variant="h1" className="mb-4">
-        Series
-      </Typography>
+      <SearchBar />
+      <SeriesHeader />
+      <SeriesContent />
     </ScrollView>
   );
 }

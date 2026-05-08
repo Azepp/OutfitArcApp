@@ -1,12 +1,14 @@
+import OutfitsContent from "@/components/outfits/outfitsContent";
+import OutfitsHeader from "@/components/outfits/outfitsHeader";
 import ScrollView from "@/components/scroll-view";
-import { Typography } from "@/components/ui/typography";
+import SearchBar from "@/components/searchBar";
 
 export default function OutfitScreen() {
   return (
     <ScrollView>
-      <Typography variant="h1" className="mb-4">
-        Outfits
-      </Typography>
+      <SearchBar />
+      <OutfitsHeader />
+      <OutfitsContent />
     </ScrollView>
   );
 }

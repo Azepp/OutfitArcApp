@@ -9,7 +9,7 @@ export default function SwitchMode() {
   const { isDark, toggleTheme } = useTheme();
 
   return (
-    <View className="flex-col items-center justify-center gap-8 my-12">
+    <View className="flex-col items-center justify-center gap-8 mb-12">
       <View>
         <Typography variant="h3" color={c.textPrimary} className="text-center mb-1">
           Mau mode terang atau gelap?

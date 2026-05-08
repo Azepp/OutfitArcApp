@@ -90,7 +90,7 @@ export default function TabLayout() {
                 marginBottom: 40,
                 shadowColor: c.primary,
                 borderWidth: 4,
-                borderColor: c.borderSecondary,
+                borderColor: c.background,
               }}
             >
               <LinearGradient
@@ -141,7 +141,7 @@ export default function TabLayout() {
           ),
           tabBarIcon: ({ color, focused }) => (
             <View style={{ backgroundColor: focused ? c.primary + "20" : "transparent" }} className="h-10 w-16 items-center flex-row justify-center rounded-full">
-              <MaterialCommunityIcons size={20} name={focused ? "invoice-list" : "invoice-list-outline"} color={color} />
+              <MaterialCommunityIcons size={20} name={focused ? "account-group" : "account-group-outline"} color={color} />
             </View>
           ),
         }}

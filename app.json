@@ -1,25 +1,25 @@
 {
   "expo": {
-    "name": "GopayClone",
-    "slug": "GopayClone",
+    "name": "OutfitArc",
+    "slug": "OutfitArc",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "gopayclone",
+    "scheme": "outfitarc",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.asepexpo.OutfitArc"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
-        "backgroundColor": "#01AED6"
+        "backgroundColor": "#0D0D0D"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.asepexpo.GopayClone"
-      
+      "package": "com.asepexpo.OutfitArc"
     },
     "web": {
       "output": "static",
@@ -33,18 +33,21 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#01AED6",
+          "backgroundColor": "#0D0D0D",
           "dark": {
-            "backgroundColor": "#01AED6"
+            "backgroundColor": "#0D0D0D"
           }
         }
       ],
       [
-      "expo-font",
-      {
-        "fonts": ["node_modules/@expo-google-fonts/inter/900Black/Inter_900Black.ttf"]
-      }
-      ]
+        "expo-font",
+        {
+          "fonts": [
+            "node_modules/@expo-google-fonts/inter/900Black/Inter_900Black.ttf"
+          ]
+        }
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,
