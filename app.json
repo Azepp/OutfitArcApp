@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "OutfitArc",
-    "slug": "OutfitArc",
+    "slug": "GopayClone",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -58,6 +58,7 @@
       "eas": {
         "projectId": "db68ff70-4265-4962-ae44-07ec35f2c871"
       }
-    }
+    },
+    "owner": "asepexpo"
   }
 }

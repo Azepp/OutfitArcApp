@@ -7,9 +7,35 @@ import { useColors } from "@/hooks/useColors";
 import { MaterialCommunityIcons, SimpleLineIcons } from "@expo/vector-icons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Octicons from "@expo/vector-icons/Octicons";
+import type { BottomTabBarButtonProps } from "@react-navigation/bottom-tabs";
 import { LinearGradient } from "expo-linear-gradient";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+function TrendingTabButton(props: BottomTabBarButtonProps) {
+  const scale = useSharedValue(1);
+  const animStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: withTiming(scale.value, { duration: 100 }) }],
+  }));
+
+  return (
+    <Pressable
+      onPress={props.onPress}
+      onLongPress={props.onLongPress}
+      onPressIn={() => {
+        scale.value = 0.95;
+      }}
+      onPressOut={() => {
+        scale.value = 1;
+      }}
+      style={props.style}
+      android_ripple={null}
+    >
+      <Animated.View style={[animStyle, { alignItems: "center", justifyContent: "center" }]}>{props.children}</Animated.View>
+    </Pressable>
+  );
+}
 
 export default function TabLayout() {
   const c = useColors();
@@ -75,20 +101,19 @@ export default function TabLayout() {
               {children}
             </Typography>
           ),
+          tabBarButton: (props) => <TrendingTabButton {...props} />,
           tabBarIcon: () => (
             <LinearGradient
               colors={["#ff9a00", "#ff0000", "#ff5a00"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 0, y: 1 }}
               style={{
-                backgroundColor: c.primary,
                 width: 80,
                 height: 80,
                 borderRadius: 100,
                 justifyContent: "center",
                 alignItems: "center",
                 marginBottom: 40,
-                shadowColor: c.primary,
                 borderWidth: 4,
                 borderColor: c.background,
               }}
@@ -98,7 +123,6 @@ export default function TabLayout() {
                 start={{ x: 0, y: 0 }}
                 end={{ x: 0, y: 1 }}
                 style={{
-                  backgroundColor: c.primary,
                   width: 60,
                   height: 60,
                   borderRadius: 100,
