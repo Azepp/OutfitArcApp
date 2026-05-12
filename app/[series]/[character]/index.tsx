@@ -35,8 +35,8 @@ export default function CharacterScreen() {
 
   return (
     <>
-      <ButtonBackPage />
       <ScrollView style={[s.container, { backgroundColor: c.background }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
+        <ButtonBackPage />
         {/* Hero */}
         <View style={s.hero}>
           {character.photo_url && <Image source={{ uri: character.photo_url }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" />}

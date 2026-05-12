@@ -3,7 +3,7 @@ import { searchAll, toSlug } from "@/lib/supabase";
 import { Feather } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 // ─── Types ─────────────────────────────────────────────────
@@ -74,6 +74,7 @@ export default function SearchBar() {
   const inputRef = useRef<View>(null);
   const router = useRouter();
   const c = useColors();
+  const [hasSearched, setHasSearched] = useState(false);
 
   const lastSearched = useRef("");
 
@@ -83,11 +84,12 @@ export default function SearchBar() {
       lastSearched.current = "";
       return;
     }
-    // Skip kalau query sama persis
     if (q === lastSearched.current) return;
     lastSearched.current = q;
 
     setLoading(true);
+    setOpen(true);
+    setHasSearched(true); // ← tandai sudah search
     try {
       const data = await searchAll(q);
       setResults(data as SearchResult);
@@ -98,19 +100,12 @@ export default function SearchBar() {
     }
   }, []);
 
-  // Hanya watch query, bukan open
-  useEffect(() => {
-    const timeout = setTimeout(() => search(query), 800);
-    return () => clearTimeout(timeout);
-  }, [query, search]);
-
   const total = results ? results.series.length + results.characters.length + results.outfits.length + results.products.length : 0;
 
   const handleFocus = () => {
     inputRef.current?.measure((_x, _y, _w, _h, _px, py) => {
       setInputY(py + _h);
     });
-    setOpen(true);
   };
 
   const closeDropdown = (cb?: () => void) => {
@@ -120,7 +115,7 @@ export default function SearchBar() {
     }, 150);
   };
 
-  const showDropdown = open && (total > 0 || (query.length >= 2 && !loading));
+  const showDropdown = open && hasSearched && (total > 0 || !loading);
 
   return (
     <View ref={inputRef} collapsable={false}>
@@ -131,10 +126,17 @@ export default function SearchBar() {
           value={query}
           onChangeText={(t) => {
             setQuery(t);
-            if (!open) setOpen(true);
+            if (t.length === 0) {
+              setHasSearched(false); // ← reset kalau dihapus
+              setOpen(false);
+              setResults(null);
+            }
           }}
           onFocus={handleFocus}
+          onSubmitEditing={() => search(query)}
+          returnKeyType="search"
           onBlur={() => closeDropdown()}
+          blurOnSubmit={false}
           placeholder="Cari anime, karakter, outfit, produk..."
           placeholderTextColor={c.textDisabled}
           style={[styles.input, { color: c.textPrimary }]}

@@ -37,15 +37,17 @@ export function ProductCard({ product }: Props) {
 
       {/* Info */}
       <View style={styles.info}>
-        {product.label && (
-          <Text style={[styles.label, { color: c.textDisabled }]} numberOfLines={1}>
-            {product.label}
+        <View className="flex-col gap-1">
+          {product.label && (
+            <Text style={[styles.label, { color: c.textDisabled }]} numberOfLines={1}>
+              {product.label}
+            </Text>
+          )}
+          <Text style={[styles.name, { color: c.textPrimary }]} numberOfLines={2}>
+            {product.name}
           </Text>
-        )}
-        <Text style={[styles.name, { color: c.textPrimary }]} numberOfLines={2}>
-          {product.name}
-        </Text>
-        {product.price && <Text style={styles.price}>{formatPrice(product.price)}</Text>}
+          {product.price && <Text style={styles.price}>{formatPrice(product.price)}</Text>}
+        </View>
 
         <ShopButtons product={product} />
       </View>
@@ -57,6 +59,7 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 12,
     overflow: "hidden",
+    flex: 1,
   },
   imageWrapper: {
     borderRadius: 12,
@@ -74,6 +77,8 @@ const styles = StyleSheet.create({
   info: {
     padding: 10,
     gap: 4,
+    flex: 1,
+    justifyContent: "space-between",
   },
   label: {
     fontSize: 10,

@@ -35,8 +35,8 @@ export default function SeriesScreen() {
 
   return (
     <>
-      <ButtonBackPage />
       <ScrollView style={[s.container, { backgroundColor: c.background }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
+        <ButtonBackPage />
         {/* Hero */}
         <View style={s.hero}>
           {series.cover_url && <Image source={{ uri: series.cover_url }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" />}

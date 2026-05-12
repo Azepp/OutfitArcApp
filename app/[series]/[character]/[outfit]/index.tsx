@@ -43,8 +43,8 @@ export default function OutfitScreen() {
 
   return (
     <>
-      <ButtonBackPage />
       <ScrollView style={[s.container, { backgroundColor: c.background }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
+        <ButtonBackPage />
         {/* Hero */}
         <View style={s.hero}>
           {outfit.outfit_url ? (
