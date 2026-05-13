@@ -8,6 +8,12 @@
     "scheme": "outfitarc",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "updates": {
+    "url": "https://u.expo.dev/db68ff70-4265-4962-ae44-07ec35f2c871"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.asepexpo.OutfitArc"
@@ -60,5 +66,7 @@
       }
     },
     "owner": "asepexpo"
+    
   }
+  
 }
