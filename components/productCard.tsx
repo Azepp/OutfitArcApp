@@ -59,7 +59,6 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 12,
     overflow: "hidden",
-    flex: 1,
   },
   imageWrapper: {
     borderRadius: 12,
