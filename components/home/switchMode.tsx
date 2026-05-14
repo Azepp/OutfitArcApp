@@ -1,12 +1,14 @@
-import { Pressable, View } from "react-native";
-import { useColors } from "@/hooks/useColors";
 import { useTheme } from "@/context/ThemeContext";
-import { Typography } from "../ui/typography";
+import { useColors } from "@/hooks/useColors";
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
+import { Pressable, View } from "react-native";
+import { Typography } from "../ui/typography";
 
 export default function SwitchMode() {
   const c = useColors();
   const { isDark, toggleTheme } = useTheme();
+  const router = useRouter();
 
   return (
     <View className="flex-col items-center justify-center gap-8 mb-12">
@@ -17,6 +19,12 @@ export default function SwitchMode() {
         <Typography variant="label" color={c.textSecondary} className="text-center">
           Nyalain atau matiin saklar sesuai keinginan
         </Typography>
+
+        <Pressable onPress={() => router.push("/admin/login" as any)} className="text-center">
+          <Typography variant="label" color={c.background} className="text-center mb-1">
+            Login Admin
+          </Typography>
+        </Pressable>
       </View>
 
       <Pressable onPress={toggleTheme}>
