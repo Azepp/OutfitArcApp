@@ -20,7 +20,7 @@ export default function SwitchMode() {
           Nyalain atau matiin saklar sesuai keinginan
         </Typography>
 
-        <Pressable onPress={() => router.push("/admin/login" as any)} className="text-center">
+        <Pressable onPress={() => router.push("/admin" as any)} className="text-center">
           <Typography variant="label" color={c.background} className="text-center mb-1">
             Login Admin
           </Typography>

@@ -69,3 +69,28 @@ export interface ClickLog {
     platform: Platform
     clicked_at: string
 }
+
+export interface RecentProduct {
+    id: string;
+    name: string;
+    created_at: string;
+    outfit: { name: string } | null;
+}
+
+export interface IncompleteProduct {
+    id: string;
+    name: string;
+    link_tokopedia: string | null;
+    link_shopee: string | null;
+    link_tiktok: string | null;
+}
+
+export interface DraftSeries {
+    id: string;
+    name: string;
+}
+export interface DraftOutfit {
+    id: string;
+    name: string;
+    character: { name: string } | null;
+}

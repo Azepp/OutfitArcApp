@@ -1,19 +1,24 @@
-// app/admin/(tabs)/_layout.tsx — Tabs + guard
-import { useMMKVBoolean } from "react-native-mmkv";
-import { Redirect, Tabs } from "expo-router";
-import { useColors } from "@/hooks/useColors";
 import { HapticTab } from "@/components/haptic-tab";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Typography } from "@/components/ui/typography";
+import { useColors } from "@/hooks/useColors";
+import { storage } from "@/lib/storage";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Redirect, Tabs } from "expo-router";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function AdminTabsLayout() {
-  const [isAdmin] = useMMKVBoolean("isAdmin");
   const c = useColors();
   const insets = useSafeAreaInsets();
+  // const [isAdmin, setIsAdmin] = useState<boolean | undefined>(undefined);
 
-  if (!isAdmin) return <Redirect href="/admin/login" />;
+  // useEffect(() => {
+  //   storage.getBoolean("isAdmin").then(setIsAdmin);
+  // }, []);
+
+  // if (isAdmin === undefined) return null;
+  // if (!isAdmin) return <Redirect href="/admin/login" />;
 
   return (
     <Tabs

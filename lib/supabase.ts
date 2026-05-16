@@ -1,6 +1,7 @@
-import type { Character as CharacterType, Outfit as OutfitType, Series as SeriesType } from '@/types'
-import type { Database } from '@/types/database.types'
-import { createClient } from '@supabase/supabase-js'
+import type { Character as CharacterType, Outfit as OutfitType, Series as SeriesType } from '@/types';
+import { DraftOutfit, DraftSeries, IncompleteProduct, RecentProduct } from "@/types";
+import type { Database } from '@/types/database.types';
+import { createClient } from '@supabase/supabase-js';
 
 export const supabase = createClient<Database>(
     process.env.EXPO_PUBLIC_SUPABASE_URL!,
@@ -345,4 +346,50 @@ export function formatPrice(price: number | null) {
         currency: 'IDR',
         maximumFractionDigits: 0,
     }).format(price)
+}
+
+export async function getStats() {
+    const [series, characters, outfits, products, clicks] = await Promise.all([
+        supabase.from("series").select("id", { count: "exact", head: true }),
+        supabase.from("characters").select("id", { count: "exact", head: true }),
+        supabase.from("outfits").select("id", { count: "exact", head: true }),
+        supabase.from("products").select("id", { count: "exact", head: true }),
+        supabase
+            .from("click_logs")
+            .select("id", { count: "exact", head: true })
+            .gte("clicked_at", new Date(Date.now() - 7 * 86400000).toISOString()),
+    ]);
+
+    // Tambahkan ini untuk debug
+    if (series.error) console.error("series error:", series.error);
+    if (characters.error) console.error("characters error:", characters.error);
+    if (outfits.error) console.error("outfits error:", outfits.error);
+    if (products.error) console.error("products error:", products.error);
+    if (clicks.error) console.error("clicks error:", clicks.error);
+
+    return {
+        series: series.count ?? 0,
+        characters: characters.count ?? 0,
+        outfits: outfits.count ?? 0,
+        products: products.count ?? 0,
+        clicks7d: clicks.count ?? 0,
+    };
+}
+
+export async function getRecentProducts(): Promise<RecentProduct[]> {
+    const { data } = await supabase.from("products").select("id, name, created_at, outfit:outfits(name)").order("created_at", { ascending: false }).limit(5);
+    return (data ?? []) as RecentProduct[];
+}
+
+export async function getIncompleteProducts(): Promise<IncompleteProduct[]> {
+    const { data } = await supabase.from("products").select("id, name, link_tokopedia, link_shopee, link_tiktok").or("link_tokopedia.is.null,link_shopee.is.null").limit(5);
+    return (data ?? []) as IncompleteProduct[];
+}
+
+export async function getDrafts(): Promise<{ series: DraftSeries[]; outfits: DraftOutfit[] }> {
+    const [series, outfits] = await Promise.all([supabase.from("series").select("id, name").eq("status", "draft").limit(3), supabase.from("outfits").select("id, name, character:characters(name)").eq("status", "draft").limit(3)]);
+    return {
+        series: (series.data ?? []) as DraftSeries[],
+        outfits: (outfits.data ?? []) as DraftOutfit[],
+    };
 }
