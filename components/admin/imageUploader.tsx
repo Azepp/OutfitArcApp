@@ -1,12 +1,12 @@
 import { useColors } from "@/hooks/useColors";
 import { supabase } from "@/lib/supabase";
 import { Feather } from "@expo/vector-icons";
-import { Image } from "expo-image";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 import { Typography } from "../ui/typography";
+import { Image } from "expo-image";
 
 interface Props {
   onUpload: (url: string) => void;
@@ -18,6 +18,12 @@ export default function ImageUpload({ onUpload, currentUrl }: Props) {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState(currentUrl ?? "");
   const [imageError, setImageError] = useState(false);
+
+  useEffect(() => {
+    if (preview) {
+      console.log("Preview URL:", preview);
+    }
+  }, [preview]);
 
   useEffect(() => {
     // Convert public URL to signed URL for mobile compatibility
@@ -110,6 +116,8 @@ export default function ImageUpload({ onUpload, currentUrl }: Props) {
         const { data: urlData } = supabase.storage.from("images").getPublicUrl(data.path);
         setImageError(false);
         setPreview(urlData.publicUrl);
+        // ganti console.log dengan alert
+        alert("Preview URL: " + urlData.publicUrl);
         onUpload(urlData.publicUrl);
         return;
       }
@@ -147,7 +155,15 @@ export default function ImageUpload({ onUpload, currentUrl }: Props) {
         </View>
       ) : preview && !imageError ? (
         <>
-          <Image source={{ uri: preview }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" onError={() => setImageError(true)} />
+          <Image
+            key={preview}
+            source={{ uri: preview }}
+            style={{
+              width: 120,
+              height: 120,
+            }}
+            contentFit="cover"
+          />
           <View style={styles.overlay}>
             <Feather name="camera" size={20} color="#fff" />
             <Typography variant="label" color="#fff">
@@ -188,6 +204,8 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.45)",
     justifyContent: "center",
     alignItems: "center",
+    width: 120,
+    height: 120,
     gap: 4,
   },
 });

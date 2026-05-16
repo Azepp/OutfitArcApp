@@ -7,7 +7,7 @@ export default function SearchBar({ value, onChange }: { value: string; onChange
   return (
     <View style={[s.searchBar, { backgroundColor: c.backgroundSecondary, borderColor: c.border }]}>
       <Feather name="search" size={14} color={c.textDisabled} />
-      <TextInput value={value} onChangeText={onChange} placeholder="Cari series..." placeholderTextColor={c.textDisabled} style={[s.searchInput, { color: c.textPrimary }]} autoCapitalize="none" autoCorrect={false} />
+      <TextInput value={value} onChangeText={onChange} placeholder="Cari..." placeholderTextColor={c.textDisabled} style={[s.searchInput, { color: c.textPrimary }]} autoCapitalize="none" autoCorrect={false} />
       {value.length > 0 && (
         <Pressable onPress={() => onChange("")}>
           <Feather name="x" size={14} color={c.textDisabled} />
