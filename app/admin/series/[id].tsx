@@ -1,4 +1,4 @@
-import { SeriesForm } from "@/components/admin/seriesForm";
+import { SeriesForm } from "@/components/admin/form/seriesForm";
 import { useLocalSearchParams } from "expo-router";
 
 export default function EditSeriesScreen() {

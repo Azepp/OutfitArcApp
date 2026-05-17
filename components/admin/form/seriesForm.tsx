@@ -7,47 +7,13 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import ImageUpload from "./imageUploader";
+import Field from "../field";
+import ImageUpload from "../imageUploader";
+import { OptionPicker } from "../pickers";
 
 const TYPE_OPTIONS = ["anime", "manhwa", "figur", "film", "series"];
 const STATUS_OPTIONS = ["publik", "draft"];
 const EMPTY_FORM = { name: "", type: "anime", description: "", status: "draft" as "publik" | "draft", cover_url: "" };
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  const c = useColors();
-  return (
-    <View style={f.field}>
-      <Typography variant="label" color={c.textSecondary} weight="semibold" style={{ marginBottom: 6 }}>
-        {label}
-      </Typography>
-      {children}
-    </View>
-  );
-}
-
-function OptionPicker({ options, value, onChange, c }: { options: string[]; value: string; onChange: (v: string) => void; c: any }) {
-  return (
-    <View style={f.optionRow}>
-      {options.map((opt) => (
-        <Pressable
-          key={opt}
-          onPress={() => onChange(opt)}
-          style={[
-            f.option,
-            {
-              backgroundColor: value === opt ? c.primary : c.backgroundSecondary,
-              borderColor: value === opt ? c.primary : c.border,
-            },
-          ]}
-        >
-          <Typography variant="label" color={value === opt ? "#fff" : c.textSecondary} weight={value === opt ? "semibold" : "regular"}>
-            {opt}
-          </Typography>
-        </Pressable>
-      ))}
-    </View>
-  );
-}
 
 export function SeriesForm({ mode, id }: { mode: "add" | "edit"; id?: string }) {
   const c = useColors();
@@ -110,7 +76,7 @@ export function SeriesForm({ mode, id }: { mode: "add" | "edit"; id?: string }) 
   }
 
   return (
-    <KeyboardAvoidingView style={[f.container, { backgroundColor: c.background }]} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+    <KeyboardAvoidingView style={[f.container, { backgroundColor: c.background }]} behavior="padding" enabled={Platform.OS === "ios"}>
       {/* Header */}
       <View style={[f.header, { paddingTop: insets.top + 16, backgroundColor: c.backgroundSecondary, borderBottomColor: c.border }]}>
         <Pressable onPress={() => router.back()} style={f.backBtn}>
@@ -211,7 +177,6 @@ const f = StyleSheet.create({
   },
   backBtn: { padding: 4 },
   body: { padding: 16, gap: 20, paddingBottom: 60 },
-  field: { gap: 6 },
   input: {
     borderWidth: 1,
     borderRadius: 10,

@@ -7,72 +7,68 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import ImageUpload from "./imageUploader";
+import Field from "../field";
+import ImageUpload from "../imageUploader";
+import { CharacterPicker, OptionPicker } from "../pickers";
 
-const EMPTY_FORM = { name: "", series_id: "", description: "", photo_url: "" };
+const GENDER_OPTIONS = [
+  { value: "all", label: "All gender" },
+  { value: "feminin", label: "Feminin" },
+  { value: "maskulin", label: "Maskulin" },
+];
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  const c = useColors();
-  return (
-    <View style={f.field}>
-      <Typography variant="label" color={c.textSecondary} weight="semibold" style={{ marginBottom: 6 }}>
-        {label}
-      </Typography>
-      {children}
-    </View>
-  );
-}
+const STATUS_OPTIONS = ["publik", "draft"];
 
-function SeriesPicker({ value, onChange, seriesList, c }: { value: string; onChange: (v: string) => void; seriesList: { id: string; name: string }[]; c: any }) {
-  return (
-    <View style={f.optionRow}>
-      {seriesList.map((s) => (
-        <Pressable
-          key={s.id}
-          onPress={() => onChange(s.id)}
-          style={[
-            f.option,
-            {
-              backgroundColor: value === s.id ? c.primary : c.backgroundSecondary,
-              borderColor: value === s.id ? c.primary : c.border,
-            },
-          ]}
-        >
-          <Typography variant="label" color={value === s.id ? "#fff" : c.textSecondary} weight={value === s.id ? "semibold" : "regular"} numberOfLines={1}>
-            {s.name}
-          </Typography>
-        </Pressable>
-      ))}
-    </View>
-  );
-}
+const EMPTY_FORM = {
+  name: "",
+  character_id: "",
+  mood: "",
+  gender_tag: "all" as "all" | "feminin" | "maskulin",
+  reference_moment: "",
+  status: "draft" as "publik" | "draft",
+  outfit_url: "",
+};
 
-export function CharacterForm({ mode, id }: { mode: "add" | "edit"; id?: string }) {
+export function OutfitForm({ mode, id }: { mode: "add" | "edit"; id?: string }) {
   const c = useColors();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
   const [form, setForm] = useState(EMPTY_FORM);
+  const [filterSeries, setFilterSeries] = useState("");
   const [error, setError] = useState("");
 
   const { data: seriesList = [] } = useQuery({
     queryKey: ["admin", "series-options"],
     queryFn: async () => {
       const { data } = await supabase.from("series").select("id, name").order("name");
-      return data ?? [];
+      return (data ?? []) as { id: string; name: string }[];
+    },
+  });
+
+  const { data: characters = [] } = useQuery({
+    queryKey: ["admin", "character-options"],
+    queryFn: async () => {
+      const { data } = await supabase.from("characters").select("id, name, series_id").order("name");
+      return (data ?? []) as { id: string; name: string; series_id: string }[];
     },
   });
 
   const { isLoading } = useQuery({
-    queryKey: ["admin", "character", id],
+    queryKey: ["admin", "outfit", id],
     queryFn: async () => {
-      const { data } = await supabase.from("characters").select("*").eq("id", id!).single();
+      const { data } = await supabase.from("outfits").select("*, character:characters(id, name, series_id)").eq("id", id!).single();
       if (data) {
+        const char = data.character as any;
+        setFilterSeries(char?.series_id ?? "");
         setForm({
           name: data.name,
-          series_id: data.series_id ?? "",
-          description: data.description ?? "",
-          photo_url: data.photo_url ?? "",
+          character_id: char?.id ?? "",
+          mood: data.mood ?? "",
+          gender_tag: (data.gender_tag as any) ?? "all",
+          reference_moment: data.reference_moment ?? "",
+          status: (data.status as any) ?? "draft",
+          outfit_url: data.outfit_url ?? "",
         });
       }
       return data;
@@ -82,24 +78,27 @@ export function CharacterForm({ mode, id }: { mode: "add" | "edit"; id?: string 
 
   const mutation = useMutation({
     mutationFn: async () => {
-      if (!form.name.trim()) throw new Error("Nama karakter wajib diisi");
-      if (!form.series_id) throw new Error("Pilih anime/series dulu");
+      if (!form.name.trim()) throw new Error("Nama outfit wajib diisi");
+      if (!form.character_id) throw new Error("Pilih karakter dulu");
 
       const payload = {
         name: form.name,
-        series_id: form.series_id,
-        description: form.description || null,
-        photo_url: form.photo_url || null,
+        character_id: form.character_id,
+        mood: form.mood || null,
+        gender_tag: form.gender_tag,
+        reference_moment: form.reference_moment || null,
+        status: form.status,
+        outfit_url: form.outfit_url || null,
       };
 
       if (mode === "add") {
-        await supabase.from("characters").insert(payload);
+        await supabase.from("outfits").insert(payload);
       } else {
-        await supabase.from("characters").update(payload).eq("id", id!);
+        await supabase.from("outfits").update(payload).eq("id", id!);
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "characters"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "outfits"] });
       router.back();
     },
     onError: (err: any) => setError(err.message),
@@ -114,14 +113,13 @@ export function CharacterForm({ mode, id }: { mode: "add" | "edit"; id?: string 
   }
 
   return (
-    <KeyboardAvoidingView style={[f.container, { backgroundColor: c.background }]} behavior={Platform.OS === "ios" ? "padding" : "height"}>
-      {/* Header */}
+    <KeyboardAvoidingView style={[f.container, { backgroundColor: c.background }]} behavior="padding" enabled={Platform.OS === "ios"}>
       <View style={[f.header, { paddingTop: insets.top + 16, backgroundColor: c.backgroundSecondary, borderBottomColor: c.border }]}>
         <Pressable onPress={() => router.back()} style={f.backBtn}>
           <Feather name="arrow-left" size={20} color={c.textPrimary} />
         </Pressable>
         <Typography variant="h3" color={c.textPrimary} weight="bold">
-          {mode === "add" ? "Tambah Karakter" : "Edit Karakter"}
+          {mode === "add" ? "Tambah Outfit" : "Edit Outfit"}
         </Typography>
         <View style={{ width: 32 }} />
       </View>
@@ -135,43 +133,60 @@ export function CharacterForm({ mode, id }: { mode: "add" | "edit"; id?: string 
           </View>
         ) : null}
 
-        <Field label="Foto Karakter">
+        <Field label="Foto Outfit">
           {mode === "edit" && isLoading ? (
             <View style={[{ width: 120, height: 120, borderRadius: 12, justifyContent: "center", alignItems: "center" }, { backgroundColor: c.backgroundSecondary }]}>
               <ActivityIndicator color={c.primary} />
             </View>
           ) : (
-            <ImageUpload key={form.photo_url || "empty"} currentUrl={form.photo_url} onUpload={(url) => setForm((p) => ({ ...p, photo_url: url }))} />
+            <ImageUpload key={form.outfit_url || "empty"} currentUrl={form.outfit_url} onUpload={(url) => setForm((p) => ({ ...p, outfit_url: url }))} />
           )}
         </Field>
 
-        <Field label="Anime / Series">
-          <SeriesPicker value={form.series_id} onChange={(v) => setForm((p) => ({ ...p, series_id: v }))} seriesList={seriesList} c={c} />
-        </Field>
+        <CharacterPicker seriesList={seriesList} characters={characters} seriesId={filterSeries} charId={form.character_id} onSeriesChange={setFilterSeries} onCharChange={(v) => setForm((p) => ({ ...p, character_id: v }))} c={c} />
 
-        <Field label="Nama Karakter">
+        <Field label="Nama Outfit">
           <TextInput
             value={form.name}
             onChangeText={(t) => {
               setForm((p) => ({ ...p, name: t }));
               setError("");
             }}
-            placeholder="cth: Gojo Satoru"
+            placeholder="cth: Monochrome All-Black"
             placeholderTextColor={c.textDisabled}
             style={[f.input, { backgroundColor: c.backgroundSecondary, color: c.textPrimary, borderColor: c.border }]}
             autoCapitalize="words"
           />
         </Field>
 
-        <Field label="Deskripsi (opsional)">
+        <Field label="Mood / Style tag">
           <TextInput
-            value={form.description}
-            onChangeText={(t) => setForm((p) => ({ ...p, description: t }))}
-            placeholder="Deskripsi singkat karakter dan style-nya..."
+            value={form.mood}
+            onChangeText={(t) => setForm((p) => ({ ...p, mood: t }))}
+            placeholder="cth: dark academic"
+            placeholderTextColor={c.textDisabled}
+            style={[f.input, { backgroundColor: c.backgroundSecondary, color: c.textPrimary, borderColor: c.border }]}
+            autoCapitalize="none"
+          />
+        </Field>
+
+        <Field label="Gender Tag">
+          <OptionPicker options={GENDER_OPTIONS} value={form.gender_tag} onChange={(v) => setForm((p) => ({ ...p, gender_tag: v as any }))} c={c} />
+        </Field>
+
+        <Field label="Status">
+          <OptionPicker options={STATUS_OPTIONS.map((s) => ({ value: s, label: s }))} value={form.status} onChange={(v) => setForm((p) => ({ ...p, status: v as any }))} c={c} />
+        </Field>
+
+        <Field label="Referensi Momen (opsional)">
+          <TextInput
+            value={form.reference_moment}
+            onChangeText={(t) => setForm((p) => ({ ...p, reference_moment: t }))}
+            placeholder="cth: Scene episode 7 saat Gojo reveal mata birunya..."
             placeholderTextColor={c.textDisabled}
             style={[f.input, f.textarea, { backgroundColor: c.backgroundSecondary, color: c.textPrimary, borderColor: c.border }]}
             multiline
-            numberOfLines={4}
+            numberOfLines={3}
             textAlignVertical="top"
           />
         </Field>
@@ -183,7 +198,7 @@ export function CharacterForm({ mode, id }: { mode: "add" | "edit"; id?: string 
                 <ActivityIndicator color="#fff" size="small" />
               ) : (
                 <Typography variant="body" color="#fff" weight="semibold">
-                  {mode === "add" ? "Tambah Karakter" : "Simpan Perubahan"}
+                  {mode === "add" ? "Tambah Outfit" : "Simpan Perubahan"}
                 </Typography>
               )}
             </View>
@@ -215,7 +230,7 @@ const f = StyleSheet.create({
     paddingVertical: 11,
     fontSize: 14,
   },
-  textarea: { height: 100 },
+  textarea: { height: 80 },
   optionRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
   option: {
     paddingHorizontal: 14,

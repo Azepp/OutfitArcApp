@@ -1,68 +1,20 @@
+import { CharacterRow } from "@/components/admin/adminRow";
 import SearchBar from "@/components/admin/adminSearchBar";
+import { FilterChips } from "@/components/admin/pickers";
+import { ConfirmDeleteModal } from "@/components/ui/modalDelete";
 import { Typography } from "@/components/ui/typography";
 import { useColors } from "@/hooks/useColors";
 import { supabase } from "@/lib/supabase";
 import type { Character } from "@/types";
 import { Feather } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, FlatList, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type CharWithSeries = Character & { series: { id: string; name: string } | null };
 
-function SeriesFilter({ value, onChange, seriesList, c }: { value: string; onChange: (v: string) => void; seriesList: { id: string; name: string }[]; c: any }) {
-  return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.filterRow}>
-      <Pressable onPress={() => onChange("")} style={[s.filterChip, { backgroundColor: value === "" ? c.primary : c.backgroundSecondary, borderColor: value === "" ? c.primary : c.border }]}>
-        <Typography variant="label" color={value === "" ? "#fff" : c.textSecondary} weight={value === "" ? "semibold" : "regular"}>
-          Semua
-        </Typography>
-      </Pressable>
-      {seriesList.map((series) => (
-        <Pressable key={series.id} onPress={() => onChange(series.id)} style={[s.filterChip, { backgroundColor: value === series.id ? c.primary : c.backgroundSecondary, borderColor: value === series.id ? c.primary : c.border }]}>
-          <Typography variant="label" color={value === series.id ? "#fff" : c.textSecondary} weight={value === series.id ? "semibold" : "regular"} numberOfLines={1}>
-            {series.name}
-          </Typography>
-        </Pressable>
-      ))}
-    </ScrollView>
-  );
-}
-
-// ─── Character Row ─────────────────────────────────────────
-function CharacterRow({ item, onEdit, onDelete, c }: { item: CharWithSeries; onEdit: () => void; onDelete: () => void; c: any }) {
-  return (
-    <View style={[s.row, { borderBottomColor: c.border }]}>
-      {/* Photo */}
-      <View style={[s.photo, { backgroundColor: c.backgroundSecondary }]}>
-        {item.photo_url ? <Image source={{ uri: item.photo_url }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" /> : <Feather name="user" size={16} color={c.textDisabled} />}
-      </View>
-
-      {/* Info */}
-      <View style={{ flex: 1, gap: 2 }}>
-        <Typography variant="label" color={c.textPrimary} weight="semibold" numberOfLines={1}>
-          {item.name}
-        </Typography>
-        <Typography variant="label" color={c.textDisabled} numberOfLines={1}>
-          {item.series?.name ?? "—"}
-        </Typography>
-      </View>
-
-      {/* Actions */}
-      <Pressable onPress={onEdit} style={s.actionBtn}>
-        <Feather name="edit-2" size={15} color={c.textSecondary} />
-      </Pressable>
-      <Pressable onPress={onDelete} style={s.actionBtn}>
-        <Feather name="trash-2" size={15} color="#ef4444" />
-      </Pressable>
-    </View>
-  );
-}
-
-// ─── Screen ────────────────────────────────────────────────
 export default function AdminCharactersScreen() {
   const c = useColors();
   const router = useRouter();
@@ -70,6 +22,7 @@ export default function AdminCharactersScreen() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [filterSeries, setFilterSeries] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState<{ id: string; name: string } | null>(null);
 
   const { data: characters = [], isLoading } = useQuery({
     queryKey: ["admin", "characters"],
@@ -123,7 +76,7 @@ export default function AdminCharactersScreen() {
       {/* Filter Series */}
       {seriesList.length > 0 && (
         <View style={[s.filterWrapper, { borderBottomColor: c.border }]}>
-          <SeriesFilter value={filterSeries} onChange={setFilterSeries} seriesList={seriesList} c={c} />
+          <FilterChips options={seriesList} value={filterSeries} onChange={setFilterSeries} allLabel="Semua Anime" c={c} />
         </View>
       )}
 
@@ -144,9 +97,23 @@ export default function AdminCharactersScreen() {
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 40 }}
-          renderItem={({ item }) => <CharacterRow item={item} c={c} onEdit={() => router.push(`/admin/characters/${item.id}` as any)} onDelete={() => deleteMutation.mutate(item.id)} />}
+          renderItem={({ item }) => <CharacterRow item={item} onEdit={() => router.push(`/admin/characters/${item.id}` as any)} onDelete={() => setConfirmDelete({ id: item.id, name: item.name })} />}
         />
       )}
+
+      <ConfirmDeleteModal
+        visible={!!confirmDelete}
+        title="Hapus Karakter?"
+        itemName={confirmDelete?.name}
+        loading={deleteMutation.isPending}
+        onConfirm={() => {
+          if (confirmDelete) {
+            deleteMutation.mutate(confirmDelete.id);
+            setConfirmDelete(null);
+          }
+        }}
+        onCancel={() => setConfirmDelete(null)}
+      />
     </View>
   );
 }

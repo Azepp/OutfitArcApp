@@ -36,7 +36,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <KeyboardAvoidingView style={[styles.container, { backgroundColor: c.background }]} behavior="padding" keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}>
+    <KeyboardAvoidingView style={[styles.container, { backgroundColor: c.background }]} behavior="padding" enabled={Platform.OS === "ios"}>
       <View style={[styles.inner, { backgroundColor: c.background }]}>
         <Typography variant="h2" color={c.textPrimary} style={{ marginBottom: 4, textAlign: "center" }}>
           Admin

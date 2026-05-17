@@ -1,4 +1,4 @@
-import { SeriesForm } from "@/components/admin/seriesForm";
+import { SeriesForm } from "@/components/admin/form/seriesForm";
 
 export default function AddSeriesScreen() {
   return <SeriesForm mode="add" />;
