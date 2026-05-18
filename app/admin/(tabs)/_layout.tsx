@@ -11,14 +11,14 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function AdminTabsLayout() {
   const c = useColors();
   const insets = useSafeAreaInsets();
-  // const [isAdmin, setIsAdmin] = useState<boolean | undefined>(undefined);
+  const [isAdmin, setIsAdmin] = useState<boolean | undefined>(undefined);
 
-  // useEffect(() => {
-  //   storage.getBoolean("isAdmin").then(setIsAdmin);
-  // }, []);
+  useEffect(() => {
+    storage.getBoolean("isAdmin").then(setIsAdmin);
+  }, []);
 
-  // if (isAdmin === undefined) return null;
-  // if (!isAdmin) return <Redirect href="/admin/login" />;
+  if (isAdmin === undefined) return null;
+  if (!isAdmin) return <Redirect href="/admin/login" />;
 
   return (
     <Tabs
