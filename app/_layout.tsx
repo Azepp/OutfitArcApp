@@ -23,13 +23,21 @@ export default function RootLayout() {
   useEffect(() => {
     async function checkUpdate() {
       try {
+        console.log("Update ID:", Updates.updateId);
+        console.log("Channel:", Updates.channel);
+        console.log("Runtime version:", Updates.runtimeVersion);
+        console.log("Is embedded:", Updates.isEmbeddedLaunch);
+
         const update = await Updates.checkForUpdateAsync();
+        console.log("Update available:", update.isAvailable);
+
         if (update.isAvailable) {
+          console.log("Fetching update...");
           await Updates.fetchUpdateAsync();
-          await Updates.reloadAsync(); // restart otomatis
+          await Updates.reloadAsync();
         }
       } catch (e) {
-        // ignore
+        console.log("Update error:", e);
       }
     }
 
