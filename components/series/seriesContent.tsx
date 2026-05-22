@@ -1,5 +1,5 @@
+import { getAllSeries } from "@/lib/api/series";
 import { keys } from "@/lib/queryKeys";
-import { getAllSeries } from "@/lib/supabase";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
 import { StyleSheet, Text, View } from "react-native";
@@ -75,6 +75,6 @@ const styles = StyleSheet.create({
   },
   gridItem: {
     flex: 1,
-    margin: 8,
+    marginBottom: 8,
   },
 });

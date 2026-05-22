@@ -5,7 +5,8 @@ import { FilterChips } from "@/components/admin/pickers";
 import { ConfirmDeleteModal } from "@/components/ui/modalDelete";
 import { Typography } from "@/components/ui/typography";
 import { useColors } from "@/hooks/useColors";
-import { supabase } from "@/lib/supabase";
+import { getAdminCharacters, getSeriesOptions } from "@/lib/api/characters";
+import { deleteOutfit, getAdminOutfits, toggleOutfitStatus } from "@/lib/api/outfits";
 import { Feather } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
@@ -35,39 +36,32 @@ export default function AdminOutfitsScreen() {
 
   const { data: outfits = [], isLoading } = useQuery({
     queryKey: ["admin", "outfits"],
-    queryFn: async () => {
-      const { data } = await supabase.from("outfits").select("*, character:characters(name, series:series(name))").order("created_at", { ascending: false });
-      return (data ?? []) as Outfit[];
-    },
+    queryFn: () => getAdminOutfits(),
   });
 
   const { data: seriesList = [] } = useQuery({
     queryKey: ["admin", "series-options"],
-    queryFn: async () => {
-      const { data } = await supabase.from("series").select("id, name").order("name");
-      return (data ?? []) as { id: string; name: string }[];
-    },
+    queryFn: () => getSeriesOptions(),
   });
 
   const { data: characters = [] } = useQuery({
     queryKey: ["admin", "character-options"],
     queryFn: async () => {
-      const { data } = await supabase.from("characters").select("id, name, series_id").order("name");
-      return (data ?? []) as { id: string; name: string; series_id: string }[];
+      const allChars = await getAdminCharacters();
+      return allChars.map((c) => ({ id: c.id, name: c.name, series_id: c.series_id }));
     },
   });
 
   const toggleMutation = useMutation({
     mutationFn: async (item: Outfit) => {
-      const next = item.status === "publik" ? "draft" : "publik";
-      await supabase.from("outfits").update({ status: next }).eq("id", item.id);
+      await toggleOutfitStatus(item.id, item.status ?? "draft");
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin", "outfits"] }),
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await supabase.from("outfits").delete().eq("id", id);
+      await deleteOutfit(id);
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin", "outfits"] }),
   });
@@ -141,9 +135,7 @@ export default function AdminOutfitsScreen() {
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 40 }}
-          renderItem={({ item }) => (
-            <OutfitRow item={item} onEdit={() => router.push(`/admin/outfits/${item.id}` as any)} onToggle={() => toggleMutation.mutate(item)} onDelete={() => setConfirmDelete({ id: item.id, name: item.name })} />
-          )}
+          renderItem={({ item }) => <OutfitRow item={item} onEdit={() => router.push(`/admin/outfits/${item.id}` as any)} onToggle={() => toggleMutation.mutate(item)} onDelete={() => setConfirmDelete({ id: item.id, name: item.name })} />}
         />
       )}
 

@@ -1,6 +1,6 @@
 import { useColors } from "@/hooks/useColors";
+import { getTrendingOutfits } from "@/lib/api/outfits";
 import { keys } from "@/lib/queryKeys";
-import { getTrendingOutfits } from "@/lib/supabase";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
 import { StyleSheet, Text, View } from "react-native";
@@ -37,7 +37,7 @@ export default function TrendingContent() {
       numColumns={2}
       showsVerticalScrollIndicator={false}
       renderItem={({ item }) => (
-        <View style={{ flex: 1, marginBottom: 12 }}>
+        <View style={{ flex: 1, marginBottom: 8 }}>
           <TrendingOutfitCard outfit={item} />
         </View>
       )}

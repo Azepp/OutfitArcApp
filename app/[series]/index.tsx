@@ -1,7 +1,7 @@
 import ButtonBackPage from "@/components/ButtonBackPage";
 import { CharacterCard } from "@/components/characterCard";
 import { useColors } from "@/hooks/useColors";
-import { getSeriesBySlug } from "@/lib/supabase";
+import { getSeriesBySlug } from "@/lib/api/series";
 import type { Character } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
@@ -73,7 +73,7 @@ const s = StyleSheet.create({
   heroSubtitle: { fontSize: 13, marginTop: 4 },
   description: { fontSize: 13, lineHeight: 20, margin: 16 },
   sectionLabel: { fontSize: 10, fontWeight: "600", textTransform: "uppercase", letterSpacing: 1, marginHorizontal: 16, marginBottom: 12, marginTop: 4 },
-  grid: { flexDirection: "row", flexWrap: "wrap", rowGap: 12, columnGap: 4, paddingHorizontal: 16 },
+  grid: { flexDirection: "row", flexWrap: "wrap", rowGap: 8, columnGap: 4, paddingHorizontal: 16 },
   card: { borderRadius: 12, overflow: "hidden" },
   placeholder: { ...StyleSheet.absoluteFillObject, justifyContent: "center", alignItems: "center" },
   placeholderIcon: { fontSize: 32 },

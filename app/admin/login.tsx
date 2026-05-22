@@ -28,7 +28,7 @@ export default function AdminLogin() {
 
   const handleLogin = async () => {
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-      await storage.setBoolean("isAdmin", true);
+      storage.setBoolean("isAdmin", true);
       router.replace("/admin" as any);
     } else {
       setError("Username atau password salah");

@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { getAllCharacters, getCharacterWithOutfits } from "@/lib/api/characters";
 import { keys } from "@/lib/queryKeys";
-import { getAllCharacters, getCharacterWithOutfits } from "@/lib/supabase";
+import { useQuery } from "@tanstack/react-query";
 
 export function useAllCharacters() {
   return useQuery({

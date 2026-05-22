@@ -1,7 +1,7 @@
 // hooks/useOutfits.ts
-import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
-import { getAllOutfits, getRecentOutfits, getOutfitWithProducts } from "@/lib/supabase";
+import { getAllOutfits, getOutfitWithProducts, getRecentOutfits } from "@/lib/api/outfits";
 import { keys } from "@/lib/queryKeys";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 const LIMIT = 20;
 

@@ -4,7 +4,7 @@ import SearchBar from "@/components/admin/adminSearchBar";
 import { ConfirmDeleteModal } from "@/components/ui/modalDelete";
 import { Typography } from "@/components/ui/typography";
 import { useColors } from "@/hooks/useColors";
-import { supabase } from "@/lib/supabase";
+import { deleteSeries, getAdminSeries, toggleSeriesStatus } from "@/lib/api/series";
 import type { Series } from "@/types";
 import { Feather } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -23,23 +23,19 @@ export default function AdminSeriesScreen() {
 
   const { data: list = [], isLoading } = useQuery({
     queryKey: ["admin", "series"],
-    queryFn: async () => {
-      const { data } = await supabase.from("series").select("*").order("created_at", { ascending: false });
-      return (data ?? []) as Series[];
-    },
+    queryFn: () => getAdminSeries(),
   });
 
   const toggleMutation = useMutation({
     mutationFn: async (item: Series) => {
-      const next = item.status === "publik" ? "draft" : "publik";
-      await supabase.from("series").update({ status: next }).eq("id", item.id);
+      await toggleSeriesStatus(item.id, item.status ?? "draft");
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin", "series"] }),
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await supabase.from("series").delete().eq("id", id);
+      await deleteSeries(id);
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin", "series"] }),
   });

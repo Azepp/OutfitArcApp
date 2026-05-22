@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import { getAllSeries, getSeriesBySlug } from "@/lib/supabase";
+import { getAllSeries, getSeriesBySlug } from "@/lib/api/series";
 import { keys } from "@/lib/queryKeys";
+import { useQuery } from "@tanstack/react-query";
 
 export function useAllSeries() {
   return useQuery({

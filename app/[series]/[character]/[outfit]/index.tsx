@@ -1,7 +1,8 @@
 import ButtonBackPage from "@/components/ButtonBackPage";
 import { ProductCard } from "@/components/productCard";
 import { useColors } from "@/hooks/useColors";
-import { formatPrice, getOutfitWithProducts } from "@/lib/supabase";
+import { getOutfitWithProducts } from "@/lib/api/outfits";
+import { formatPrice } from "@/lib/supabase";
 import { useQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -92,5 +93,5 @@ const s = StyleSheet.create({
   heroPrice: { fontSize: 16, fontWeight: "700", color: "#4ade80", marginTop: 8 },
   sectionLabel: { fontSize: 10, fontWeight: "600", textTransform: "uppercase", letterSpacing: 1, marginHorizontal: 16, marginTop: 20, marginBottom: 12 },
   empty: { fontSize: 13, textAlign: "center", paddingVertical: 20 },
-  grid: { flexDirection: "row", flexWrap: "wrap", rowGap: 12, columnGap: 4, paddingHorizontal: 16 },
+  grid: { flexDirection: "row", flexWrap: "wrap", rowGap: 8, columnGap: 4, paddingHorizontal: 16 },
 });

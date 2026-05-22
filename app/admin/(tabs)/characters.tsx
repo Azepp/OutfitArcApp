@@ -4,7 +4,7 @@ import { FilterChips } from "@/components/admin/pickers";
 import { ConfirmDeleteModal } from "@/components/ui/modalDelete";
 import { Typography } from "@/components/ui/typography";
 import { useColors } from "@/hooks/useColors";
-import { supabase } from "@/lib/supabase";
+import { deleteCharacter, getAdminCharacters, getSeriesOptions } from "@/lib/api/characters";
 import type { Character } from "@/types";
 import { Feather } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -26,23 +26,17 @@ export default function AdminCharactersScreen() {
 
   const { data: characters = [], isLoading } = useQuery({
     queryKey: ["admin", "characters"],
-    queryFn: async () => {
-      const { data } = await supabase.from("characters").select("*, series:series(id, name)").order("created_at", { ascending: false });
-      return (data ?? []) as CharWithSeries[];
-    },
+    queryFn: () => getAdminCharacters(),
   });
 
   const { data: seriesList = [] } = useQuery({
     queryKey: ["admin", "series-options"],
-    queryFn: async () => {
-      const { data } = await supabase.from("series").select("id, name").order("name");
-      return data ?? [];
-    },
+    queryFn: () => getSeriesOptions(),
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await supabase.from("characters").delete().eq("id", id);
+      await deleteCharacter(id);
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin", "characters"] }),
   });

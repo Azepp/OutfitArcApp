@@ -1,5 +1,6 @@
+import { getRecentOutfits } from "@/lib/api/outfits";
+import { getAllSeries } from "@/lib/api/series";
 import { keys } from "@/lib/queryKeys";
-import { getAllSeries, getRecentOutfits } from "@/lib/supabase";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
 import type { Href } from "expo-router";
@@ -195,6 +196,6 @@ const styles = StyleSheet.create({
   },
   gridItem: {
     flex: 1,
-    marginVertical: 6,
+    marginBottom: 8,
   },
 });

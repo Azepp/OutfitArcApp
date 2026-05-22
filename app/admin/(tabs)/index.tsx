@@ -1,6 +1,8 @@
 import { Typography } from "@/components/ui/typography";
 import { useColors } from "@/hooks/useColors";
-import { getDrafts, getIncompleteProducts, getRecentProducts, getStats } from "@/lib/supabase";
+import { getStats } from "@/lib/api/analytics";
+import { getIncompleteProducts, getRecentProducts } from "@/lib/api/products";
+import { getDrafts } from "@/lib/api/series";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";

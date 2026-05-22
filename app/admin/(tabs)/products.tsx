@@ -4,7 +4,7 @@ import { FilterChips } from "@/components/admin/pickers";
 import { ConfirmDeleteModal } from "@/components/ui/modalDelete";
 import { Typography } from "@/components/ui/typography";
 import { useColors } from "@/hooks/useColors";
-import { getProductsWithOutfits } from "@/lib/supabase";
+import { deleteProduct, getProductsWithOutfits } from "@/lib/api/products";
 import { Feather } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
@@ -44,8 +44,7 @@ export default function AdminProductsScreen() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { supabase } = await import("@/lib/supabase");
-      await supabase.from("products").delete().eq("id", id);
+      await deleteProduct(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
