@@ -28,7 +28,7 @@
       "package": "com.asepexpo.OutfitArc"
     },
     "web": {
-      "output": "static",
+      "single": "static",
       "favicon": "./assets/images/icon.png"
     },
     "plugins": [
