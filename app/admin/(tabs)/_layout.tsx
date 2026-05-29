@@ -8,16 +8,16 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export default function AdminTabsLayout() {
+export default  function AdminTabsLayout() {
   const c = useColors();
   const insets = useSafeAreaInsets();
-  const [isAdmin, setIsAdmin] = useState<boolean | undefined>(undefined);
+  // AdminLayout
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     storage.getBoolean("isAdmin").then(setIsAdmin);
   }, []);
 
-  if (isAdmin === undefined) return null;
   if (!isAdmin) return <Redirect href="/admin/login" />;
 
   return (
