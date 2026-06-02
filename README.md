@@ -1,50 +1,47 @@
-# Welcome to your Expo app 👋
+# OutfitArc
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplikasi katalog outfit karakter dari anime, manhwa, film, dan series. Temukan inspirasi outfit dari karakter favoritmu dan beli itemnya langsung dari Tokopedia, Shopee, dan TikTok.
 
-## Get started
+## Tech Stack
 
-1. Install dependencies
+- **Framework:** React Native dengan Expo
+- **Routing:** Expo Router (file-based routing)
+- **Styling:** NativeWind (Tailwind CSS)
+- **Backend:** Supabase
+- **State Management:** TanStack Query
+- **Storage:** MMKV & AsyncStorage
+- **Animasi:** React Native Reanimated
 
-   ```bash
-   npm install
-   ```
+## Fitur Utama
 
-2. Start the app
+- **Series** — Jelajahi berbagai series anime, manhwa, film, dan series
+- **Characters** — Lihat karakter dan outfit mereka
+- **Outfits** — Detail outfit dengan mood, gender tag, dan referensi momen
+- **Products** — Item penyusun outfit dengan link pembelian
+- **Admin Panel** — CRUD untuk mengelola series, karakter, outfit, dan produk
 
-   ```bash
-   npx expo start
-   ```
+## Cara Memulai
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+1. Install dependencies:
 
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+2. Jalankan aplikasi:
 
-## Learn more
+```bash
+npx expo start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+3. Buka di iOS Simulator, Android Emulator, atau Expo Go.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Struktur Folder
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- `app/` — Expo Router pages (file-based routing)
+- `components/` — Komponen UI
+- `lib/` — Supabase client, API functions, query keys
+- `types/` — TypeScript type definitions
+- `constants/` — Konstanta (warna, typografi, data home)
+- `context/` — React context (theme)
+- `assets/` — Gambar dan aset statis
